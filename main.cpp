@@ -43,8 +43,8 @@ int transmit_test(int argc, char *argv[])
 
     qDebug("#INFO: Before Scan:");
     qDebug("#INFO: \tSystem Power: \t%lf W", pluto.pluto_get_power());
-    qDebug("#INFO: \tDevice Voltage: \t%lf A", pluto.pluto_get_voltage());
-    qDebug("#INFO: \tDevice Current: \t%lf V", pluto.pluto_get_current());
+    qDebug("#INFO: \tDevice Voltage: \t%lf V", pluto.pluto_get_voltage());
+    qDebug("#INFO: \tDevice Current: \t%lf A", pluto.pluto_get_current());
     qDebug("#INFO: \tSoC Temperature: \t%lf °C", pluto.pluto_get_soc_temp());
     qDebug("#INFO: \tRF Temperature: \t%lf °C", pluto.pluto_get_rf_temp());
 
@@ -98,8 +98,8 @@ int transmit_test(int argc, char *argv[])
 
     qDebug("#INFO: After Scan:");
     qDebug("#INFO: \tSystem Power: \t%lf W", pluto.pluto_get_power());
-    qDebug("#INFO: \tDevice Voltage: \t%lf A", pluto.pluto_get_voltage());
-    qDebug("#INFO: \tDevice Current: \t%lf V", pluto.pluto_get_current());
+    qDebug("#INFO: \tDevice Voltage: \t%lf V", pluto.pluto_get_voltage());
+    qDebug("#INFO: \tDevice Current: \t%lf A", pluto.pluto_get_current());
     qDebug("#INFO: \tSoC Temperature: \t%lf °C", pluto.pluto_get_soc_temp());
     qDebug("#INFO: \tRF Temperature: \t%lf °C", pluto.pluto_get_rf_temp());
 
@@ -171,8 +171,8 @@ int transmit_test(int argc, char *argv[])
 
     qDebug("#INFO: After Transmit:");
     qDebug("#INFO: \tSystem Power: \t%lf W", pluto.pluto_get_power());
-    qDebug("#INFO: \tDevice Voltage: \t%lf A", pluto.pluto_get_voltage());
-    qDebug("#INFO: \tDevice Current: \t%lf V", pluto.pluto_get_current());
+    qDebug("#INFO: \tDevice Voltage: \t%lf V", pluto.pluto_get_voltage());
+    qDebug("#INFO: \tDevice Current: \t%lf A", pluto.pluto_get_current());
     qDebug("#INFO: \tSoC Temperature: \t%lf °C", pluto.pluto_get_soc_temp());
     qDebug("#INFO: \tRF Temperature: \t%lf °C", pluto.pluto_get_rf_temp());
 
