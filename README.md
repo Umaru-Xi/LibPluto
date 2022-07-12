@@ -9,9 +9,13 @@ PlutoDevice.h
 
 ## Example  
 
-PlutoPWR.pro  
-main.cpp
+autotest.cpp  
+How to make: g++ -g -o autotest.run ./autotest.cpp ./PlutoDevice.cpp -liio  
 
 ## Reference  
 
 Pluto_IIO_Info.txt  
+
+## Screenshot  
+
+QtScreenshot: The screenshot of some other program which use this library and Qt6.0 developed by myself.  

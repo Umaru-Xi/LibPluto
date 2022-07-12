@@ -1,57 +1,167 @@
 #include "PlutoDevice.h"
 
+int pluto_sdr::pluto_get_tx_gain(double *tx_gain)
+{
+    return _pluto_attr_get(
+                (void *)tx_gain,
+                pluto_dev.rf_phy, (char *)"voltage0", true,
+                (char *)"hardwaregain", "TX Gain",
+                "double");
+}
+
+int pluto_sdr::pluto_get_tx_samprate(long long *samprate)
+{
+    return _pluto_attr_get(
+                (void *)samprate,
+                pluto_dev.rf_phy, (char *)"voltage0", true,
+                (char *)"sampling_frequency", "TX Sampling Rate",
+                "longlong");
+}
+
+int pluto_sdr::pluto_get_tx_bandwidth(long long *tx_bandwidth)
+{
+    return _pluto_attr_get(
+                (void *)tx_bandwidth,
+                pluto_dev.rf_phy, (char *)"voltage0", true,
+                (char *)"rf_bandwidth", "TX Bnadwidth",
+                "longlong");
+}
+
+int pluto_sdr::pluto_get_tx_fir_is_enable(bool *is_enable)
+{
+    return _pluto_attr_get(
+                    (void *)is_enable,
+                    pluto_dev.rf_phy, (char *)"voltage0", true,
+                    (char *)"filter_fir_en", "TX FIR Filter Status",
+                    "bool");
+}
+
+int pluto_sdr::pluto_get_rx_is_enable(bool *is_enable)
+{
+    int return_code;
+    bool value = false;
+    return_code = _pluto_attr_get(
+                (void *)&value,
+                pluto_dev.rf_phy, (char *)"altvoltage0", true,
+                (char *)"powerdown", "RX Enable Status",
+                "bool");
+    *is_enable = !value;
+    return return_code;
+}
+
+int pluto_sdr::pluto_get_tx_is_enable(bool *is_enable)
+{
+    int return_code;
+    bool value = false;
+    return_code = _pluto_attr_get(
+                (void *)&value,
+                pluto_dev.rf_phy, (char *)"altvoltage1", true,
+                (char *)"powerdown", "TX Enable Status",
+                "bool");
+    *is_enable = !value;
+    return return_code;
+}
+
+int pluto_sdr::pluto_get_rx_freq(long long *rx_freq)
+{
+    return _pluto_attr_get(
+                (void *)rx_freq,
+                pluto_dev.rf_phy, (char *)"altvoltage0", true,
+                (char *)"frequency", "RX Frequency",
+                "longlong");
+}
+
+int pluto_sdr::pluto_get_rx_samprate(long long *samprate)
+{
+    return _pluto_attr_get(
+                (void *)samprate,
+                pluto_dev.rf_phy, (char *)"voltage0", false,
+                (char *)"sampling_frequency", "RX Sampling Rate",
+                "longlong");
+}
+
+int pluto_sdr::pluto_get_rx_bandwidth(long long *rx_bandwidth)
+{
+    return _pluto_attr_get(
+                (void *)rx_bandwidth,
+                pluto_dev.rf_phy, (char *)"voltage0", false,
+                (char *)"rf_bandwidth", "RX Bandwidth",
+                "longlong");
+}
+
+int pluto_sdr::pluto_get_rx_gain(long long *rx_gain)
+{
+    return _pluto_attr_get(
+                (void *)rx_gain,
+                pluto_dev.rf_phy, (char *)"voltage0", false,
+                (char *)"hardwaregain", "RX Gain",
+                "longlong");
+}
+
+int pluto_sdr::pluto_get_rx_fir_is_enable(bool *is_enable)
+{
+    return _pluto_attr_get(
+                (void *)is_enable,
+                pluto_dev.rf_phy, (char *)"voltage0", false,
+                (char *)"filter_fir_en", "RX FIR Filter Status",
+                "bool");
+}
+
+int pluto_sdr::pluto_get_tx_freq(long long *tx_freq)
+{
+    return _pluto_attr_get(
+                (void *)tx_freq,
+                pluto_dev.rf_phy, (char *)"altvoltage1", true,
+                (char *)"frequency", "TX Frequency",
+                "longlong");
+}
+
 long long pluto_sdr::pluto_kHz(double kHz)
 {
+    pluto_message_generate("kHz(double) to Hz(long long) convertion.", 0);
     return kHz * 1000;
 }
 
 long long pluto_sdr::pluto_MHz(double MHz)
 {
+    pluto_message_generate("MHz(double) to Hz(long long) convertion.", 0);
     return MHz * 1000000;
 }
 
 long long pluto_sdr::pluto_GHz(double GHz)
 {
+    pluto_message_generate("GHz(double) to Hz(long long) convertion.", 0);
     return GHz * 1000000000;
 }
 
 int pluto_sdr::pluto_set_tx_samprate(long long tx_samprate)
 {
-    if(tx_samprate < 2083334 || tx_samprate > 61439999)
-    {
-        pluto_message_generate("TX Sampling Rate must in [2083334, 61439999].", 2);
-        return 1;
-    }
-    pluto_message_generate("TX Sampling Rate has been set.", 0);
-    return iio_channel_attr_write_longlong(
-                iio_device_find_channel(pluto_dev.rf_phy, "voltage0", true),
-                "sampling_frequency", tx_samprate);
+    long long value_min, value_max, value_inc;
+    value_min = 2083334; value_max = 61439999; value_inc = 1;
+    return _pluto_attr_set(
+            (void *)&tx_samprate, true, (void *)&value_min, (void *)&value_max, (void *)&value_inc,
+            pluto_dev.rf_phy, (char *)"voltage0", true, (char *)"sampling_frequency",
+            "TX Sampling Rate", "longlong");
 }
 
 int pluto_sdr::pluto_set_tx_bandwidth(long long tx_bandwidth)
 {
-    if(tx_bandwidth < 200001 || tx_bandwidth > 39999999)
-    {
-        pluto_message_generate("TX Bandwidth must in [200001, 39999999].", 2);
-        return 1;
-    }
-    pluto_message_generate("TX Bandwidth has been set.", 0);
-    return iio_channel_attr_write_longlong(
-                iio_device_find_channel(pluto_dev.rf_phy, "voltage0", true),
-                "rf_bandwidth", tx_bandwidth);
+    long long value_min, value_max, value_inc;
+    value_min = 200001; value_max = 39999999; value_inc = 1;
+    return _pluto_attr_set(
+            (void *)&tx_bandwidth, true, (void *)&value_min, (void *)&value_max, (void *)&value_inc,
+            pluto_dev.rf_phy, (char *)"voltage0", true, (char *)"rf_bandwidth",
+            "TX Bandwidth", "longlong");
 }
 
 int pluto_sdr::pluto_set_tx_gain(double tx_gain)
 {
-    if(tx_gain < -90.00 || tx_gain > -0.25)
-    {
-        pluto_message_generate("TX Gain must in [-90.00 : 0.25 : -0.25].", 2);
-        return 1;
-    }
-    pluto_message_generate("TX Gain has been set.", 0);
-    return iio_channel_attr_write_double(
-                iio_device_find_channel(pluto_dev.rf_phy, "voltage0", true),
-                "hardwaregain", tx_gain);
+    double value_min, value_max, value_inc;
+    value_min = -90.00; value_max = -0.25; value_inc = 0.25;
+    return _pluto_attr_set(
+            (void *)&tx_gain, true, (void *)&value_min, (void *)&value_max, (void *)&value_inc,
+            pluto_dev.rf_phy, (char *)"voltage0", true, (char *)"hardwaregain",
+            "TX Gain", "double");
 }
 
 int pluto_sdr::pluto_set_tx_fir_en(bool is_enable)
@@ -66,25 +176,32 @@ int pluto_sdr::pluto_set_tx_fir_en(bool is_enable)
 
 int pluto_sdr::pluto_set_tx_freq(long long tx_freq)
 {
-    if(tx_freq < 46875002 || tx_freq > 5999999999)
-    {
-        pluto_message_generate("TX Frequency must in [46875002, 5999999999].", 2);
-        return 1;
-    }
-    pluto_message_generate("TX Frequency has been set.", 0);
-    return iio_channel_attr_write_longlong(
-                iio_device_find_channel(pluto_dev.rf_phy, "altvoltage1", true),
-                "frequency", tx_freq);
+    long long value_min, value_max, value_inc;
+    value_min = 46875002; value_max = 5999999999; value_inc = 1;
+    return _pluto_attr_set(
+            (void *)&tx_freq, true, (void *)&value_min, (void *)&value_max, (void *)&value_inc,
+            pluto_dev.rf_phy, (char *)"altvoltage1", true, (char *)"frequency",
+            "TX Frequency", "longlong");
+}
+
+int pluto_sdr::pluto_set_rx_en(bool is_enable)
+{
+    bool value;
+    value = !is_enable;
+    return _pluto_attr_set(
+            (void *)&value, false, (void *)NULL, (void *)NULL, (void *)NULL,
+            pluto_dev.rf_phy, (char *)"altvoltage0", true, (char *)"powerdown",
+            "RX Enable Status", "bool");
 }
 
 int pluto_sdr::pluto_set_tx_en(bool is_enable)
 {
-    int return_code = iio_channel_attr_write_bool(
-                iio_device_find_channel(pluto_dev.rf_phy, "altvoltage1", true),
-                "powerdown", !is_enable);
-    if(return_code == 0) pluto_message_generate("TX has been set.", 0);
-    else pluto_message_generate("Can not set TX.", 2);
-    return return_code;
+    bool value;
+    value = !is_enable;
+    return _pluto_attr_set(
+            (void *)&value, false, (void *)NULL, (void *)NULL, (void *)NULL,
+            pluto_dev.rf_phy, (char *)"altvoltage1", true, (char *)"powerdown",
+            "TX Enable Status", "bool");
 }
 
 int pluto_sdr::pluto_init_transmitter(size_t samples_cnt)
@@ -121,38 +238,30 @@ int pluto_sdr::pluto_init_transmitter(size_t samples_cnt)
 
 int pluto_sdr::pluto_set_rx_fir_en(bool is_enable)
 {
-    int return_code = iio_channel_attr_write_bool(
-                iio_device_find_channel(pluto_dev.rf_phy, "voltage0", false),
-                "filter_fir_en", is_enable);
-    if(return_code == 0) pluto_message_generate("RX FIR Filter has been set.", 0);
-    else pluto_message_generate("Can not set RX FIR Filter.", 2);
-    return return_code;
+    return _pluto_attr_set(
+            (void *)&is_enable, false, (void *)NULL, (void *)NULL, (void *)NULL,
+            pluto_dev.rf_phy, (char *)"voltage0", false, (char *)"filter_fir_en",
+            "RX FIR Filter", "bool");
 }
 
 int pluto_sdr::pluto_set_rx_gain(long long rx_gain)
 {
-    if(rx_gain < -2 || rx_gain > 70)
-    {
-        pluto_message_generate("RX Gain must in [-2, 70].", 2);
-        return 1;
-    }
-    pluto_message_generate("RX Gain has been set.", 0);
-    return iio_channel_attr_write_longlong(
-                iio_device_find_channel(pluto_dev.rf_phy, "voltage0", false),
-                "hardwaregain", rx_gain);
+    long long value_min, value_max, value_inc;
+    value_min =0; value_max = 72; value_inc = 1;
+    return _pluto_attr_set(
+            (void *)&rx_gain, true, (void *)&value_min, (void *)&value_max, (void *)&value_inc,
+            pluto_dev.rf_phy, (char *)"voltage0", false, (char *)"hardwaregain",
+            "RX Gain", "longlong");
 }
 
 int pluto_sdr::pluto_set_rx_bandwidth(long long rx_bandwidth)
 {
-    if(rx_bandwidth < 200001 || rx_bandwidth > 55999999)
-    {
-        pluto_message_generate("RX Bandwidth must in [200001, 55999999].", 2);
-        return 1;
-    }
-    pluto_message_generate("RX Bandwidth has been set.", 0);
-    return iio_channel_attr_write_longlong(
-                iio_device_find_channel(pluto_dev.rf_phy, "voltage0", false),
-                "rf_bandwidth", rx_bandwidth);
+    long long value_min, value_max, value_inc;
+    value_min = 200001; value_max = 55999999; value_inc = 1;
+    return _pluto_attr_set(
+            (void *)&rx_bandwidth, true, (void *)&value_min, (void *)&value_max, (void *)&value_inc,
+            pluto_dev.rf_phy, (char *)"voltage0", false, (char *)"rf_bandwidth",
+            "RX Bandwidth", "longlong");
 }
 
 void pluto_sdr::pluto_message_generate(std::string msg, int code)
@@ -184,28 +293,22 @@ void pluto_sdr::pluto_message_generate(std::string msg, int code)
 
 int pluto_sdr::pluto_set_rx_samprate(long long samprate)
 {
-    if(samprate < 2083334 || samprate > 61439999)
-    {
-        pluto_message_generate("RX Sampling Rate must in [2083334, 61439999].", 2);
-        return 1;
-    }
-    pluto_message_generate("RX Sampling Rate has been set.", 0);
-    return iio_channel_attr_write_longlong(
-                iio_device_find_channel(pluto_dev.rf_phy, "voltage0", false),
-                "sampling_frequency", samprate);
+    long long value_min, value_max, value_inc;
+    value_min = 2083334; value_max = 61439999; value_inc = 1;
+    return _pluto_attr_set(
+            (void *)&samprate, true, (void *)&value_min, (void *)&value_max, (void *)&value_inc,
+            pluto_dev.rf_phy, (char *)"voltage0", false, (char *)"sampling_frequency",
+            "RX Sampling Rate", "longlong");
 }
 
 int pluto_sdr::pluto_set_rx_freq(long long rx_freq)
 {
-    if(rx_freq < 70000001 || rx_freq > 5999999999)
-    {
-        pluto_message_generate("RX Frequency must in [70000001, 5999999999].", 2);
-        return 1;
-    }
-    pluto_message_generate("RX Frequency Rate has been set.", 0);
-    return iio_channel_attr_write_longlong(
-                iio_device_find_channel(pluto_dev.rf_phy, "altvoltage0", true),
-                "frequency", rx_freq);
+    long long value_min, value_max, value_inc;
+    value_min = 70000001; value_max = 5999999999; value_inc = 1;
+    return _pluto_attr_set(
+            (void *)&rx_freq, true, (void *)&value_min, (void *)&value_max, (void *)&value_inc,
+            pluto_dev.rf_phy, (char *)"altvoltage0", true, (char *)"frequency",
+            "RX Frequency", "longlong");
 }
 
 int pluto_sdr::pluto_init(char * device_uri)
@@ -298,54 +401,100 @@ int pluto_sdr::pluto_get_rx_data()
     return 0;
 }
 
-double pluto_sdr::pluto_get_rf_temp()
+int pluto_sdr::pluto_get_rf_temp(double *rf_temp)
 {
     long long rf_temp_raw;
-    double rf_temp;
-    iio_channel_attr_read_longlong(pluto_dev.rf_temperature, "input", &rf_temp_raw);
-    rf_temp =rf_temp_raw / 1000.0;
-    pluto_message_generate("RF Chipset's Temperature has been gotten.", 0);
-    return rf_temp;
+    if(iio_channel_attr_read_longlong(pluto_dev.rf_temperature, "input", &rf_temp_raw) < 0)
+    {
+        pluto_message_generate("Can not get RF Chipset's Temperature.", 2);
+        return 1;
+    }
+    else
+    {
+        *rf_temp =rf_temp_raw / 1000.0;
+        pluto_message_generate("RF Chipset's Temperature has been gotten.", 0);
+    }
+    return 0;
 }
 
-double pluto_sdr::pluto_get_soc_temp()
+int pluto_sdr::pluto_get_soc_temp(double *soc_temp)
 {
     double soc_temp_scale;
     long long soc_temp_raw, soc_temp_offset;
-    iio_channel_attr_read_double(pluto_dev.soc_temperature, "scale", &soc_temp_scale);
-    iio_channel_attr_read_longlong(pluto_dev.soc_temperature, "raw", &soc_temp_raw);
-    iio_channel_attr_read_longlong(pluto_dev.soc_temperature, "offset", &soc_temp_offset);
+    if(iio_channel_attr_read_double(pluto_dev.soc_temperature, "scale", &soc_temp_scale) < 0)
+    {
+        pluto_message_generate("Can not get SOC Temperature Scale value.", 2);
+        return 1;
+    }
+    if(iio_channel_attr_read_longlong(pluto_dev.soc_temperature, "raw", &soc_temp_raw) < 0)
+    {
+        pluto_message_generate("Can not get SOC Temperature RAW value.", 2);
+        return 1;
+    }
+    if(iio_channel_attr_read_longlong(pluto_dev.soc_temperature, "offset", &soc_temp_offset) < 0)
+    {
+        pluto_message_generate("Can not get SOC Temperature Offset value.", 2);
+        return 1;
+    }
     pluto_message_generate("APSoC's Temperature has been gotten.", 0);
-    return (soc_temp_raw + soc_temp_offset) * soc_temp_scale / 1000.0;
+    *soc_temp = (soc_temp_raw + soc_temp_offset) * soc_temp_scale / 1000.0;
+    return 0;
 }
 
-double pluto_sdr::pluto_get_power()
+int pluto_sdr::pluto_get_power(double *sys_power)
 {
     double current, voltage;
-    current = pluto_get_current();
-    voltage = pluto_get_voltage();
+    if(pluto_get_current(&current) != 0)
+    {
+        pluto_message_generate("Can not get System Current.", 0);
+        return 1;
+    }
+    if(pluto_get_voltage(&voltage) != 0)
+    {
+        pluto_message_generate("Can not get System Voltage.", 0);
+        return 1;
+    }
     pluto_message_generate("System Power has been calculated.", 0);
-    return current * voltage;
+    *sys_power = current * voltage;
+    return 0;
 }
 
-double pluto_sdr::pluto_get_voltage()
+int pluto_sdr::pluto_get_voltage(double *sys_voltage)
 {
     double voltage_scale;
     long long voltage_raw;
-    iio_channel_attr_read_double(pluto_dev.pwr_voltage, "scale", &voltage_scale);
-    iio_channel_attr_read_longlong(pluto_dev.pwr_voltage, "raw", &voltage_raw);
+    if(iio_channel_attr_read_double(pluto_dev.pwr_voltage, "scale", &voltage_scale) < 0)
+    {
+        pluto_message_generate("Can not get System Voltage Scale value.", 2);
+        return 1;
+    }
+    if(iio_channel_attr_read_longlong(pluto_dev.pwr_voltage, "raw", &voltage_raw) < 0)
+    {
+        pluto_message_generate("Can not get System Voltage RAW value.", 2);
+        return 1;
+    }
     pluto_message_generate("System Voltage has been gotten.", 0);
-    return voltage_raw * voltage_scale / 1000.0;
+    *sys_voltage = voltage_raw * voltage_scale / 1000.0;
+    return 0;
 }
 
-double pluto_sdr::pluto_get_current()
+int pluto_sdr::pluto_get_current(double *sys_current)
 {
     double current_scale;
     long long current_raw;
-    iio_channel_attr_read_double(pluto_dev.pwr_current, "scale", &current_scale);
-    iio_channel_attr_read_longlong(pluto_dev.pwr_current, "raw", &current_raw);
+    if(iio_channel_attr_read_double(pluto_dev.pwr_current, "scale", &current_scale) <0)
+    {
+        pluto_message_generate("Can not get System Current Scale value.", 2);
+        return 1;
+    }
+    if(iio_channel_attr_read_longlong(pluto_dev.pwr_current, "raw", &current_raw) < 0)
+    {
+        pluto_message_generate("Can not get System Current RAW value.", 2);
+        return 1;
+    }
     pluto_message_generate("System Current has been gotten.", 0);
-    return current_raw * current_scale / 1000.0;
+    *sys_current = current_raw * current_scale / 1000.0;
+    return 0;
 }
 
 int pluto_sdr::pluto_init_sensors()
@@ -407,6 +556,143 @@ void pluto_sdr::pluto_destroy()
     _pluto_destroy_context();
     pluto_message_generate("ADALM-Pluto can be disconnected now.", 0);
     return;
+}
+
+int pluto_sdr::_pluto_attr_set(
+        void *value, bool is_limited, void *value_min, void *value_max, void *value_inc,
+        struct iio_device *device, char *channel, bool is_output, char *attr,
+        std::string value_name, std::string type_name)
+{
+    int type_code, return_code;
+    bool out_of_limit;
+    if(type_name == "bool")
+    {
+        type_code = 0;
+        out_of_limit = false;
+    }
+    else if(type_name == "long long" || type_name == "longlong")
+    {
+        type_code = 1;
+        out_of_limit = (is_limited && (*(long long *)value < *(long long *)value_min
+                        || *(long long *)value > *(long long *)value_max
+                        || *(long long *)value % *(long long *)value_inc != 0
+                ))? true : false;
+    }
+    else if(type_name == "double")
+    {
+        type_code = 2;
+        out_of_limit = (is_limited && (*(double *)value < *(double *)value_min
+                        || *(double *)value > *(double *)value_max
+                        || *(double *)value - (floor(*(double *)value / *(double *)value_inc) * (*(double *)value_inc)) != 0.00
+                ))? true : false;
+    }
+    else
+    {
+        type_code = 3;
+        out_of_limit = false;
+    }
+    if(out_of_limit)
+    {
+        pluto_message_generate(value_name, 2);
+        pluto_message.append(" must in range [");
+        if(type_code == 1) pluto_message.append(std::to_string(*(long long *)value_min));
+        else pluto_message.append(std::to_string(*(double *)value_min));
+        pluto_message.append(" : ");
+        if(type_code == 1) pluto_message.append(std::to_string(*(long long *)value_inc));
+        else pluto_message.append(std::to_string(*(double *)value_inc));
+        pluto_message.append(" : ");
+        if(type_code == 1) pluto_message.append(std::to_string(*(long long *)value_max));
+        else pluto_message.append(std::to_string(*(double *)value_max));
+        pluto_message.append("].");
+        return 1;
+    }
+    switch(type_code)
+    {
+        case 0:
+        {
+            return_code = iio_channel_attr_write_bool(
+                            iio_device_find_channel(device, channel, is_output),
+                            attr, *(bool *)value); break;
+        }
+        case 1:
+        {
+            return_code = iio_channel_attr_write_longlong(
+                            iio_device_find_channel(device, channel, is_output),
+                            attr, *(long long *)value); break;
+        }
+        case 2:
+        {
+            return_code = iio_channel_attr_write_double(
+                            iio_device_find_channel(device, channel, is_output),
+                            attr, *(double *)value); break;
+        }
+        default:
+        {
+            return_code = 1;
+        }
+    }
+    switch(return_code)
+    {
+        case 0:
+        {
+            pluto_message_generate(value_name, 0);
+            pluto_message.append(" has been set.");
+            break;
+        }
+        case 1:
+        {
+            pluto_message_generate("Input type of internal function _pluto_attr_set error.", 2);
+            break;
+        }
+        default:
+        {
+            pluto_message_generate("Can not set ", 2);
+            pluto_message.append(value_name);
+            pluto_message.append(".");
+            break;
+        }
+    }
+    return return_code;
+}
+
+int pluto_sdr::_pluto_attr_get(void *value, struct iio_device *device, char *channel, bool is_output, char *attr, std::string value_name, std::string type_name)
+{
+    int return_code;
+    if(type_name == "bool")
+        return_code = iio_channel_attr_read_bool(
+                        iio_device_find_channel(device, channel, is_output),
+                        attr, (bool *)value);
+    else if(type_name == "long long" || type_name == "longlong")
+        return_code = iio_channel_attr_read_longlong(
+                        iio_device_find_channel(device, channel, is_output),
+                        attr, (long long *)value);
+    else if(type_name == "double")
+        return_code = iio_channel_attr_read_double(
+                        iio_device_find_channel(device, channel, is_output),
+                        attr, (double *)value);
+    else return_code = 1;
+    switch(return_code)
+    {
+        case 0:
+        {
+            pluto_message_generate(value_name, 0);
+            pluto_message.append(" has been gotten.");
+            break;
+        }
+        case 1:
+        {
+            pluto_message_generate("Input type of internal function _pluto_attr_get error.", 2);
+            break;
+        }
+        default:
+        {
+            pluto_message_generate("Can not get ", 2);
+            pluto_message.append(value_name);
+            pluto_message.append(".");
+            break;
+        }
+    }
+    return return_code;
 }
 
 void pluto_sdr::__pluto_receiver_example()

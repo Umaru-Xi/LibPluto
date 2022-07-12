@@ -3,6 +3,7 @@
 
 #include <iio.h>
 #include <string>
+#include <math.h>
 
 class pluto_sdr{
 private:
@@ -23,6 +24,11 @@ private:
         struct iio_channel *tx_i, *tx_q;    // Receiver;
     } pluto_dev;
 
+    int _pluto_attr_get(void *value, struct iio_device *device, char *channel, bool is_output,
+                        char *attr, std::string value_name, std::string type_name);
+    int _pluto_attr_set(void *value, bool is_limited, void *value_min, void *value_max, void *value_inc,
+                        struct iio_device *device, char *channel, bool is_output, char *attr,
+                        std::string value_name, std::string type_name);
     struct iio_buffer *_pluto_create_buffer(iio_device *device, size_t samples_cnt);
     void _pluto_destroy_context();
     void _pluto_destroy_buffer_rx();
@@ -41,11 +47,19 @@ public:
         void *tx_ptr_start, *tx_ptr_end;
         ptrdiff_t tx_ptr_inc;
     } pluto_transmitter;
-    struct pluto_temperature{
-        float rf_temp;
-        float soc_temp;
-    } pluto_temperature;
 
+    int pluto_get_tx_gain(double *tx_gain);
+    int pluto_get_tx_samprate(long long *samprate);
+    int pluto_get_tx_bandwidth(long long *tx_bandwidth);
+    int pluto_get_tx_fir_is_enable(bool *is_enable);
+    int pluto_get_rx_is_enable(bool *is_enable);
+    int pluto_get_rx_freq(long long *rx_freq);
+    int pluto_get_rx_samprate(long long *samprate);
+    int pluto_get_rx_bandwidth(long long *rx_bandwidth);
+    int pluto_get_rx_gain(long long *rx_gain);
+    int pluto_get_rx_fir_is_enable(bool *is_enable);
+    int pluto_get_tx_freq(long long *tx_freq);
+    int pluto_get_tx_is_enable(bool *is_enable);
     long long pluto_MHz(double MHz);
     long long pluto_GHz(double GHz);
     long long pluto_kHz(double kHz);
@@ -55,17 +69,18 @@ public:
     int pluto_set_tx_fir_en(bool is_enable);
     int pluto_set_tx_freq(long long tx_freq);
     int pluto_set_tx_en(bool is_enable);
+    int pluto_set_rx_en(bool is_enable);
     int pluto_schedule_tx_buff();
     int pluto_init_transmitter(size_t samples_cnt);
     int pluto_set_rx_fir_en(bool is_enable);
     int pluto_set_rx_gain(long long rx_gain);
     int pluto_set_rx_bandwidth(long long rx_bandwidth);
     void pluto_message_generate(std::string msg, int code);
-    double pluto_get_rf_temp();
-    double pluto_get_soc_temp();
-    double pluto_get_power();
-    double pluto_get_voltage();
-    double pluto_get_current();
+    int pluto_get_rf_temp(double *rf_temp);
+    int pluto_get_soc_temp(double *soc_temp);
+    int pluto_get_power(double *sys_power);
+    int pluto_get_voltage(double *sys_voltage);
+    int pluto_get_current(double *sys_current);
     int pluto_get_rx_data();
     int pluto_set_rx_samprate(long long samprate);
     int pluto_set_rx_freq(long long rx_freq);

@@ -3,11 +3,11 @@
 #include <QtCharts/QChart>
 #include <QtCharts/QChartView>
 #include <QtWidgets/QMainWindow>
-#include <QDebug>
-
-#include "PlutoDev.h"
+#include <QElapsedTimer>
+#include "PlutoDevice.h"
 
 QT_USE_NAMESPACE
+#include <QDebug>
 
 int transmit_test(int argc, char *argv[]);
 
