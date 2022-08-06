@@ -129,6 +129,9 @@
 (ffi:def-call-out pluto_get_rx_data
     (:library "./libpluto.so")
     (:return-type ffi:int))
+(ffi:def-call-out pluto_set_tx_data
+    (:library "./libpluto.so")
+    (:return-type ffi:int))
 (ffi:def-call-out pluto_destroy
     (:library "./libpluto.so")
     (:return-type nil))

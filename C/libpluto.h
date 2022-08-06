@@ -48,6 +48,7 @@ int pluto_set_rx_freq(long long rx_freq);
 // Other Functions
 int pluto_schedule_tx_buff();
 int pluto_get_rx_data();
+int pluto_set_tx_data();
 void pluto_destroy();
 // Utilities
 int pluto_util_init_all(char * device_uri, size_t rx_samples_cnt, size_t tx_samples_cnt);

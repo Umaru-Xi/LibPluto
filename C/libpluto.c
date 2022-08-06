@@ -313,6 +313,12 @@ int pluto_get_rx_data()
     return 0;
 }
 
+int pluto_set_tx_data()
+{
+    if(iio_buffer_push(pluto_dev.tx_buf) < 0) return 1;
+    else return 0;
+}
+
 double pluto_get_rf_temp()
 {
     double rf_temp = 0;
@@ -547,6 +553,7 @@ void pluto_util_set_tx_power(long long tx_freq, long long tx_bandwidth, long lon
         ((int16_t*)point)[1] = q << 4;
     }
     pluto_set_tx_en(true);
+    pluto_set_tx_data();
 }
 
 /*
