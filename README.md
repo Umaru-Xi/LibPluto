@@ -1,3 +1,7 @@
+# Archived
+
+I do not own an ADALM-Pluto from now, so this library and dependencied project will be discontinued.  
+
 # Pluto SDR Device Library
 
 This project is a device library for ADALM-Pluto which is written with C++, C and Common Lisp. Every language has own examples, except C which is the base of others.  
